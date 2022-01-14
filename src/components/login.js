@@ -18,11 +18,10 @@ export default function Login() {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    console.log('here');
     try{
-      
-        console.log('meao');
+        console.log("getting auth");
         const auth = getAuth();
+        console.log("got auth");
         await signInWithEmailAndPassword(auth, emailAddress, password);
         console.log(user.uid);
         console.log(auth.currentUser.uid);

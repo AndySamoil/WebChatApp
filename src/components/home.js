@@ -1,6 +1,6 @@
 import { AuthContext } from "../firebase/context";
-import { useState, useContext, useEffect } from "react";
-import { getAuth } from "firebase/auth";
+import React, { useState, useContext, useEffect } from "react";
+import { getAuth, reload } from "firebase/auth";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { storage } from "../firebase/config";
 import env from "react-dotenv";
@@ -11,11 +11,14 @@ export default function Home() {
     const [photoURL, setPhotoURL] = useState("");
     const [uploadedPhoto, setUploadedPhoto] = useState(null);
 
-    const state = {
-        selectedFile: null
-    }
+    const [message, setMessage] = useState("");
+    const [display, setDisplay] = useState("");
 
-    
+    const [state, setState] = useState([]);
+
+    useEffect(() => {
+        pri();
+    }, [])
 
     const fileSelectedHandler = event => {
         // this.setState({
@@ -41,7 +44,6 @@ export default function Home() {
 
     async function pri(){
         try {
-            console.log(env.measurementId);
             const pathReference = await getDownloadURL(ref(storage, 'ProfileImages/'+ String(Curuser.user.uid)));
             console.log(pathReference);
             setPhotoURL(pathReference);
@@ -49,6 +51,16 @@ export default function Home() {
             console.log(e)
         }
 
+    }
+
+    function addMessage(e) {
+        setState([...state, {name:message, photo:photoURL}]);
+    }
+
+    const checkenter = (e) => {
+        if (e.key == 'Enter') {
+            addMessage(e);
+        }
     }
 
     return (
@@ -61,16 +73,20 @@ export default function Home() {
             <input type="file" onChange={fileSelectedHandler}/>
             {/* {Curuser.user.uid} <br/> */}
             {/* <img src = /> */}
-            { photoURL ? (
-                <>
-                <p>Yes Photo</p>
-                
-                <img className="rounded" src={photoURL} alt=""/>
-                </>
-            ) : (
-                <p>No Photo</p>
-            )};
-            <button onClick={pri}>Click Me!</button>
+            <div>
+                <ul>
+                    {state.map(item => {
+                    return(
+                        <div>
+                        <p key={item.name}>{item.name}</p>
+                        <img src={item.photo} alt="joe" width="100" height="100"/>
+                        </div>
+                        );
+                    })}
+                </ul>
+            </div>
+            <input type="text" onKeyPress={(e) => checkenter(e)} onChange={({ target }) => setMessage(target.value)}/>
+            <button onClick={addMessage}>Send</button>
 
 
         </div>
