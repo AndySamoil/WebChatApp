@@ -16,7 +16,7 @@ export default function Home() {
 
     const q = query(chatRef, orderBy('createdAt'), limit(6));
 
-    const [messages] = useCollectionData(q);
+    const [messages] = useCollectionData(q); 
     // const [values, loading, error] = useCollectionData<T> (query, options);
 
     const [photoURL, setPhotoURL] = useState("");
