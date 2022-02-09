@@ -5,7 +5,7 @@ import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { storage } from "../firebase/config";
 import env from "react-dotenv";
 import { firestoreDB } from "../firebase/config";
-import { addDoc, collection, getDocs, doc, onSnapshot, serverTimestamp, query, orderBy, limit } from "firebase/firestore"; 
+import { addDoc, collection, getDocs, doc, onSnapshot, serverTimestamp, query, orderBy, limit, limitToLast, deleteDoc } from "firebase/firestore"; 
 import { useCollectionData } from "react-firebase-hooks/firestore";
 
 
@@ -14,7 +14,7 @@ export default function Home() {
 
     const chatRef = collection(firestoreDB, "chat");
 
-    const q = query(chatRef, orderBy('createdAt'), limit(6));
+    const q = query(chatRef, orderBy('createdAt'), limitToLast(6));
 
     const [messages] = useCollectionData(q); 
     // const [values, loading, error] = useCollectionData<T> (query, options);
@@ -52,6 +52,26 @@ export default function Home() {
             uploadBytes(storageRef, uploadedPhoto).then((snapshot) => {
                 console.log('Uploaded a blob or file!');
               });
+        }
+    }
+
+    const deleteEverything = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(firestoreDB, "chat"));
+            console.log("tried")
+            querySnapshot.forEach((docArg) => {
+                console.log(docArg.id);
+                
+                //const docref = doc(firestoreDB, "chat", docArg.id);
+                //const docsnap = await getDoc(docref);
+                deleteDoc(doc(firestoreDB, "chat", docArg.id));
+            });
+
+        // chatRef.forEach((doc) => {
+        //     deleteDoc(doc(firestoreDB, "chat", doc));
+        //});
+        } catch (e) {
+            console.log("delete failed", e);
         }
     }
 
@@ -139,6 +159,7 @@ export default function Home() {
             <div>
                 <button onClick={() => console.log(Curuser.user.uid)}> Click Here </button>
             </div>
+            <button onClick={deleteEverything}> Refresh </button>
             <button onClick={fileUploadHandler}> Upload </button>
             <input type="file" onChange={fileSelectedHandler}/>
             {/* {Curuser.user.uid} <br/> */}
