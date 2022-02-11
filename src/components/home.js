@@ -169,8 +169,8 @@ export default function Home() {
                     {messages && messages.map(item => {
                     return(
                         <div>
-                        <p key={item.message}>{item.message}</p>
                         <img src={item.PhotoURL} alt="joe" width="100" height="100"/>
+                        <span key={item.message}>{item.message}</span>
                         </div>
                         );
                     })}
